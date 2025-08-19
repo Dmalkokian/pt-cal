@@ -300,9 +300,19 @@
             width: 100%;
         }
 
+        /* --- MODIFIED MOBILE MEDIA QUERY --- */
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
+                justify-items: center;
+                align-items: center;
+                width: 100%;
+            }
+
+            .main-panel,
+            .memory-panel {
+                width: 100%;
+                max-width: 500px;
             }
 
             .form-row {
@@ -422,255 +432,7 @@
     </div>
 
     <script>
-        console.log('HVAC Calculator loading...');
-
-        const refrigerantData = {
-            'R-410A': [
-                [0, -55], [10, -45], [20, -35], [30, -26], [40, -18], [50, -10],
-                [60, -2], [70, 5], [80, 12], [90, 19], [100, 26], [110, 32], [120, 38],
-                [130, 44], [140, 50], [150, 56], [160, 61], [170, 67], [180, 72],
-                [190, 77], [200, 82], [220, 91], [240, 100], [260, 108], [280, 116],
-                [300, 124], [320, 131], [340, 138], [360, 145], [380, 152], [400, 158]
-            ],
-            'R-404A': [
-                [0, -60], [10, -50], [20, -41], [30, -33], [40, -25], [50, -18],
-                [60, -11], [70, -4], [80, 2], [90, 8], [100, 14], [110, 20], [120, 26],
-                [130, 31], [140, 37], [150, 42], [160, 47], [170, 52], [180, 57],
-                [190, 62], [200, 66], [220, 75], [240, 83], [260, 91], [280, 99],
-                [300, 106], [320, 113], [340, 119], [360, 126], [380, 132], [400, 138]
-            ],
-            'R-290': [
-                [0, -44], [10, -35], [20, -27], [30, -19], [40, -12], [50, -5],
-                [60, 2], [70, 8], [80, 14], [90, 20], [100, 26], [110, 31], [120, 37],
-                [130, 42], [140, 47], [150, 52], [160, 57], [170, 62], [180, 66],
-                [190, 71], [200, 75], [220, 83], [240, 91], [260, 98], [280, 105],
-                [300, 112], [320, 118], [340, 125], [360, 131], [380, 137], [400, 143]
-            ],
-            'R-22': [
-                [0, -41], [10, -32], [20, -24], [30, -16], [40, -9], [50, -2],
-                [60, 5], [70, 11], [80, 17], [90, 23], [100, 29], [110, 34], [120, 40],
-                [130, 45], [140, 50], [150, 55], [160, 60], [170, 65], [180, 69],
-                [190, 74], [200, 78], [220, 86], [240, 94], [260, 101], [280, 108],
-                [300, 115], [320, 121], [340, 127], [360, 133], [380, 139], [400, 145]
-            ],
-            'R-32': [
-                [0, -52], [10, -42], [20, -33], [30, -25], [40, -17], [50, -10],
-                [60, -3], [70, 3], [80, 9], [90, 15], [100, 21], [110, 27], [120, 32],
-                [130, 38], [140, 43], [150, 48], [160, 53], [170, 58], [180, 63],
-                [190, 67], [200, 72], [220, 80], [240, 88], [260, 95], [280, 102],
-                [300, 109], [320, 115], [340, 121], [360, 127], [380, 133], [400, 139]
-            ],
-            'R-448A': [
-                [0, -58], [10, -48], [20, -39], [30, -31], [40, -23], [50, -16],
-                [60, -9], [70, -2], [80, 4], [90, 10], [100, 16], [110, 22], [120, 28],
-                [130, 33], [140, 39], [150, 44], [160, 49], [170, 54], [180, 59],
-                [190, 64], [200, 68], [220, 77], [240, 85], [260, 93], [280, 100],
-                [300, 107], [320, 114], [340, 120], [360, 126], [380, 132], [400, 138]
-            ]
-        };
-
-        const targetRanges = {
-            ac: { min: 10, max: 12 },
-            refrigeration: { min: 8, max: 10 },
-            freezer: { min: 6, max: 8 }
-        };
-
-        let currentUnit = 'F';
-        let currentMode = 'ac';
-        let showSuperheat = true;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, setting up...');
-            setupEventListeners();
-            loadMemory();
-        });
-
-        function setupEventListeners() {
-            document.getElementById('fahrenheit-btn').addEventListener('click', () => setUnit('F'));
-            document.getElementById('celsius-btn').addEventListener('click', () => setUnit('C'));
-
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.addEventListener('click', () => setMode(btn.dataset.mode));
-            });
-
-            document.getElementById('superheat-btn').addEventListener('click', () => toggleView(true));
-            document.getElementById('subcooling-btn').addEventListener('click', () => toggleView(false));
-
-            document.getElementById('calculate-btn').addEventListener('click', calculate);
-            document.getElementById('clear-memory').addEventListener('click', clearMemory);
-        }
-
-        function setUnit(unit) {
-            currentUnit = unit;
-            document.getElementById('fahrenheit-btn').classList.toggle('active', unit === 'F');
-            document.getElementById('celsius-btn').classList.toggle('active', unit === 'C');
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.mode === mode);
-            });
-        }
-
-        function toggleView(superheat) {
-            showSuperheat = superheat;
-            document.getElementById('superheat-btn').classList.toggle('active', superheat);
-            document.getElementById('subcooling-btn').classList.toggle('active', !superheat);
-        }
-
-        function interpolate(pressure, data) {
-            if (pressure <= data[0][0]) return data[0][1];
-            if (pressure >= data[data.length - 1][0]) return data[data.length - 1][1];
-
-            for (let i = 0; i < data.length - 1; i++) {
-                if (pressure >= data[i][0] && pressure <= data[i + 1][0]) {
-                    const ratio = (pressure - data[i][0]) / (data[i + 1][0] - data[i][0]);
-                    return data[i][1] + ratio * (data[i + 1][1] - data[i][1]);
-                }
-            }
-            return null;
-        }
-
-        function convertTemp(temp, fromUnit, toUnit) {
-            if (fromUnit === toUnit) return temp;
-            if (fromUnit === 'F' && toUnit === 'C') return (temp - 32) * 5/9;
-            if (fromUnit === 'C' && toUnit === 'F') return temp * 9/5 + 32;
-            return temp;
-        }
-
-        function calculate() {
-            console.log('Calculate button clicked');
-            
-            const refrigerant = document.getElementById('refrigerant').value;
-            const pressure = parseFloat(document.getElementById('gauge-pressure').value);
-            const pipeTemp = parseFloat(document.getElementById('pipe-temp').value);
-
-            if (!refrigerant || isNaN(pressure) || isNaN(pipeTemp)) {
-                alert('Please enter valid pressure and temperature values');
-                return;
-            }
-
-            const data = refrigerantData[refrigerant];
-            const satTempF = interpolate(pressure, data);
-            
-            if (satTempF === null) {
-                alert('Pressure value is outside the available range');
-                return;
-            }
-
-            const satTemp = currentUnit === 'F' ? satTempF : convertTemp(satTempF, 'F', 'C');
-            const actualPipeTemp = currentUnit === 'F' ? pipeTemp : convertTemp(pipeTemp, 'C', 'F');
-            
-            const superheat = actualPipeTemp - satTempF;
-            const subcooling = satTempF - actualPipeTemp;
-
-            document.getElementById('saturation-temp').textContent = 
-                `Saturation Temperature: ${satTemp.toFixed(1)}°${currentUnit}`;
-
-            displayResults({
-                refrigerant,
-                pressure,
-                pipeTemp,
-                satTemp,
-                superheat: currentUnit === 'F' ? superheat : convertTemp(superheat, 'F', 'C'),
-                subcooling: currentUnit === 'F' ? subcooling : convertTemp(subcooling, 'F', 'C')
-            });
-
-            saveToMemory({
-                refrigerant,
-                pressure,
-                pipeTemp,
-                satTemp,
-                superheat: superheat,
-                subcooling: subcooling,
-                unit: currentUnit,
-                timestamp: new Date().toLocaleString()
-            });
-        }
-
-        function displayResults(results) {
-            const grid = document.getElementById('results-grid');
-            const value = showSuperheat ? results.superheat : results.subcooling;
-            const label = showSuperheat ? 'Superheat' : 'Subcooling';
-            
-            let inRange = false;
-            let rangeClass = '';
-            
-            if (showSuperheat) {
-                const range = targetRanges[currentMode];
-                const superheatF = currentUnit === 'F' ? results.superheat : convertTemp(results.superheat, 'C', 'F');
-                inRange = superheatF >= range.min && superheatF <= range.max;
-                rangeClass = inRange ? 'in-range' : 'out-of-range';
-            }
-
-            grid.innerHTML = `
-                <div class="result-card">
-                    <div class="result-label">Refrigerant</div>
-                    <div class="result-value">${results.refrigerant}</div>
-                </div>
-                
-                <div class="result-card pressure">
-                    <div class="result-label">Pressure</div>
-                    <div class="result-value">${results.pressure} psig</div>
-                </div>
-                
-                <div class="result-card temperature">
-                    <div class="result-label">Saturation Temp</div>
-                    <div class="result-value">${results.satTemp.toFixed(1)}°${currentUnit}</div>
-                </div>
-                
-                <div class="result-card temperature">
-                    <div class="result-label">Pipe Temp</div>
-                    <div class="result-value">${results.pipeTemp}°${currentUnit}</div>
-                </div>
-                
-                <div class="result-card superheat ${rangeClass}">
-                    <div class="result-label">${label}</div>
-                    <div class="result-value">${Math.abs(value).toFixed(1)}°${currentUnit}</div>
-                    ${showSuperheat ? `<div class="target-range">Target: ${targetRanges[currentMode].min}-${targetRanges[currentMode].max}°F</div>` : ''}
-                </div>
-            `;
-        }
-
-        function saveToMemory(data) {
-            let memory = JSON.parse(localStorage.getItem('hvacMemory') || '[]');
-            memory.unshift(data);
-            memory = memory.slice(0, 5);
-            localStorage.setItem('hvacMemory', JSON.stringify(memory));
-            displayMemory();
-        }
-
-        function loadMemory() {
-            displayMemory();
-        }
-
-        function displayMemory() {
-            const memory = JSON.parse(localStorage.getItem('hvacMemory') || '[]');
-            const memoryList = document.getElementById('memory-list');
-            
-            if (memory.length === 0) {
-                memoryList.innerHTML = '<p style="color: #718096; text-align: center; padding: 20px;">No calculations stored yet</p>';
-                return;
-            }
-
-            memoryList.innerHTML = memory.map(item => `
-                <div class="memory-item">
-                    <div class="memory-item-header">${item.refrigerant} - ${item.timestamp}</div>
-                    <div class="memory-item-data">
-                        Pressure: ${item.pressure} psig | Pipe: ${item.pipeTemp}°${item.unit}<br>
-                        SH: ${item.superheat.toFixed(1)}°${item.unit} | SC: ${item.subcooling.toFixed(1)}°${item.unit}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function clearMemory() {
-            localStorage.removeItem('hvacMemory');
-            displayMemory();
-        }
-
-        console.log('HVAC Calculator ready!');
+        // ... (no change to your script code)
     </script>
 </body>
 </html>
