@@ -160,12 +160,14 @@
             background: #f7fafc;
             border-radius: 8px;
             border: 2px solid #e2e8f0;
+            padding: 4px;
         }
 
         .sh-sc-toggle button {
             flex: 1;
             padding: 12px 16px;
             border: none;
+            border-radius: 6px;
             background: transparent;
             cursor: pointer;
             transition: all 0.2s;
@@ -175,6 +177,7 @@
         .sh-sc-toggle button.active {
             background: #667eea;
             color: white;
+            border-radius: 6px;
         }
 
         .calculate-btn {
@@ -405,11 +408,21 @@
                 max-width: 300px;
                 padding: 12px 20px;
                 font-size: 16px;
+                display: block;
             }
 
             .unit-toggle, .sh-sc-toggle {
                 max-width: 300px;
                 margin: 0 auto;
+                display: block;
+            }
+
+            .sh-sc-toggle button {
+                border-radius: 6px;
+            }
+
+            .sh-sc-toggle button.active {
+                border-radius: 6px;
             }
 
             select, input {
