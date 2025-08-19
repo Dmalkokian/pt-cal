@@ -302,70 +302,109 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 5px;
             }
 
             .container {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 10px;
                 max-width: 100%;
                 margin: 0 auto;
             }
 
             .main-panel {
-                padding: 20px;
-                margin: 0 auto;
-                width: 100%;
-                max-width: 500px;
-            }
-
-            .memory-panel {
                 padding: 15px;
                 margin: 0 auto;
                 width: 100%;
                 max-width: 500px;
             }
 
+            .memory-panel {
+                padding: 10px;
+                margin: 0 auto;
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .form-section {
+                margin-bottom: 15px;
+            }
+
             .form-row {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .form-group {
+                max-width: 400px;
+                margin: 0 auto 10px auto;
             }
 
             .mode-selector {
-                grid-template-columns: 1fr;
-                gap: 8px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+                margin-bottom: 10px;
+                max-width: 400px;
+                margin: 0 auto 10px auto;
+            }
+
+            .mode-btn {
+                padding: 8px 4px;
+                font-size: 12px;
             }
 
             .result-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .result-card {
+                padding: 12px;
+            }
+
+            .result-value {
+                font-size: 18px;
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
                 text-align: center;
+                margin-bottom: 5px;
             }
 
             .subtitle {
                 text-align: center;
+                margin-bottom: 15px;
+                font-size: 1rem;
             }
 
             .form-section h3 {
                 text-align: center;
-                font-size: 1.1rem;
+                font-size: 1rem;
+                margin-bottom: 10px;
             }
 
             .results-header h3 {
                 text-align: center;
+                margin-bottom: 10px;
             }
 
             .memory-section h3 {
                 text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .results-section {
+                margin-top: 15px;
+                padding: 15px;
             }
 
             .calculate-btn {
-                margin: 20px auto;
+                margin: 10px auto;
                 max-width: 300px;
+                padding: 12px 20px;
+                font-size: 16px;
             }
 
             .unit-toggle, .sh-sc-toggle {
@@ -373,19 +412,33 @@
                 margin: 0 auto;
             }
 
-            .mode-selector {
-                max-width: 400px;
-                margin: 0 auto;
-            }
-
             select, input {
                 font-size: 16px;
-                padding: 14px 16px;
+                padding: 10px 12px;
             }
 
-            .form-group {
-                max-width: 400px;
-                margin: 0 auto 15px auto;
+            .saturation-display {
+                margin-top: 5px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .memory-item {
+                padding: 10px;
+                margin-bottom: 8px;
+            }
+
+            .memory-item-header {
+                font-size: 12px;
+            }
+
+            .memory-item-data {
+                font-size: 11px;
+            }
+
+            label {
+                margin-bottom: 5px;
+                font-size: 14px;
             }
         }
     </style>
