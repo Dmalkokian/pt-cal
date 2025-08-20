@@ -13,6 +13,64 @@
         }
 
 ```
+    function copyResultsToClipboard() {
+        console.log('Results copy button clicked');
+        
+        if (!lastResults) {
+            alert('No results to copy. Please calculate first.');
+            return;
+        }
+
+        // Get current form values
+        const refrigerant = document.getElementById('refrigerant').value;
+        const suctionPressure = lastResults.pressure; // Using gauge pressure as suction pressure
+        const liquidPressure = 'N/A'; // We don't have liquid pressure in current setup
+        const superheat = Math.abs(lastResults.superheat).toFixed(1);
+        const subcooling = Math.abs(lastResults.subcooling).toFixed(1);
+
+        // Format as mini report
+        const copyText = `=== HVAC READING REPORT ===
+```
+
+Date: ${new Date().toLocaleDateString()}
+Time: ${new Date().toLocaleTimeString()}
+
+SYSTEM INFORMATION:
+Refrigerant Type: ${refrigerant}
+
+PRESSURE READINGS:
+Suction Pressure: ${suctionPressure} psig
+Liquid Pressure: ${liquidPressure}
+
+TEMPERATURE ANALYSIS:
+Superheat: ${superheat}°${currentUnit}
+Subcooling: ${subcooling}°${currentUnit}
+
+=== END REPORT ===`;
+
+```
+        console.log('Text to copy:', copyText);
+
+        // Show text in prompt for copying
+        const userText = prompt('Copy this HVAC report:', copyText);
+        if (userText !== null) {
+            showResultsCopySuccess();
+        }
+    }
+
+    function showResultsCopySuccess() {
+        const copyBtn = document.getElementById('results-copy-btn');
+        const originalText = copyBtn.textContent;
+        
+        copyBtn.textContent = '✅ Copied to Clipboard';
+        copyBtn.classList.add('copied');
+        
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('copied');
+        }, 2000);
+    }
+
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1209,9 +1267,6 @@
             subcooling: currentUnit === 'F' ? subcooling : convertTemp(subcooling, 'F', 'C')
         });
 
-        // Show copy button
-        document.getElementById('copy-section').style.display = 'block';
-
         // Save to memory
         saveToMemory({
             refrigerant,
@@ -1345,7 +1400,12 @@ Refrigerant: ${lastResults.refrigerant}`;
                             SH: ${item.superheat.toFixed(1)}°${item.unit} | SC: ${item.subcooling.toFixed(1)}°${item.unit}
                         </div>
                     </div>
-                    <button class="memory-copy-btn" onclick="copyMemoryItem(${index})">📋 Copy</button>
+                    <button class="memory-copy-btn" onclick="copyMemoryItem(${index})">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 16V6c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2zm-6 4H4V10h2v6c0 1.1.9 2 2 2h4v2zm4-4H8V6h8v10z"/>
+                        </svg>
+                        Share
+                    </button>
                 </div>
             </div>
         `).join('');
@@ -1388,11 +1448,21 @@ Subcooling: ${item.subcooling.toFixed(1)}°${item.unit}`;
         
         if (btn) {
             const originalText = btn.textContent;
-            btn.textContent = '✅ Copied';
+            btn.innerHTML = `
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                </svg>
+                Shared
+            `;
             btn.classList.add('copied');
             
             setTimeout(() => {
-                btn.textContent = originalText;
+                btn.innerHTML = `
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 16V6c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2v-2h2c1.1 0 2-.9 2-2zm-6 4H4V10h2v6c0 1.1.9 2 2 2h4v2zm4-4H8V6h8v10z"/>
+                </svg>
+                Share
+            `;
                 btn.classList.remove('copied');
             }, 2000);
         }
